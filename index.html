@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Profile Demo - Cyril</title>
+<title>Profile Demo</title>
 
 <style>
     body {
@@ -64,20 +64,9 @@
     iframe {
         display: none;
     }
-    
-    .user-info {
-        margin-bottom: 20px;
-        padding: 10px;
-        background: #e3f2fd;
-        border-radius: 5px;
-    }
 </style>
 </head>
 <body>
-
-<div class="user-info">
-    <h3>当前用户: <span id="userName">Cyril</span></h3>
-</div>
 
 <h2>Profile Picture</h2>
 
@@ -92,11 +81,10 @@
 
 <iframe id="hiddenFrame" name="hiddenFrame"></iframe>
 
-<form id="uploadForm" action="https://script.google.com/macros/s/AKfycbyc6MzX0CPfUyHV8pGyWW-i42WmQfm7oBble34knPSvYElNIKNtw8PoP3-ZBSIb8Waw/exec" method="POST" target="hiddenFrame" style="display:none;">
+<form id="uploadForm" action="https://script.google.com/macros/s/AKfycbyKMVs0oC7upw9GzaEPYnLAR04zKMI9L8TnKaG14UQekMf8Zw1_2eMNQLUp4I_JjWQI/exec" method="POST" target="hiddenFrame" style="display:none;">
     <input type="hidden" name="action" value="saveBase64">
     <input type="hidden" name="base64" id="base64Field">
-    <!-- 添加用户参数 -->
-    <input type="hidden" name="user" id="userField">
+    <input type="hidden" name="user" id="userField" value="Cyril"> <!-- 添加这一行，只需修改这里的值 -->
 </form>
 
 <script>
@@ -107,17 +95,10 @@ const editIcon = document.getElementById("editIcon");
 const base64Field = document.getElementById("base64Field");
 const userField = document.getElementById("userField");
 
-// ==================== 修改这里：设置用户名 ====================
-const CURRENT_USER = "Cyril"; // 复制时只需修改这个值
-// =========================================================
+// 获取用户名（从表单字段读取）
+const CURRENT_USER = userField.value; // 这里自动获取表单中的用户名
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyKMVs0oC7upw9GzaEPYnLAR04zKMI9L8TnKaG14UQekMf8Zw1_2eMNQLUp4I_JjWQI/exec";
-
-// 显示当前用户
-document.getElementById("userName").textContent = CURRENT_USER;
-
-// 设置user字段
-userField.value = CURRENT_USER;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyBLabIKIt7U9L_pDRmYLNFC5opuEH_zvvCXTD6VGPuLt5myPSgmcizBuW-emrktgRk/exec";
 
 // 点击按钮 → 打开文件选择
 uploadBtn.onclick = () => hiddenUpload.click();
@@ -138,9 +119,9 @@ hiddenUpload.onchange = async (e) => {
     // 上传按钮隐藏
     uploadBtn.style.display = "none";
 
-    // form 提交（包含用户信息）
+    // form 提交
     base64Field.value = base64;
-    userField.value = CURRENT_USER; // 确保用户信息最新
+    userField.value = CURRENT_USER; // 确保用户信息正确
     document.getElementById("uploadForm").submit();
 };
 
@@ -167,8 +148,8 @@ function compressImage(file, maxWidth) {
 
 // 页面加载 → 自动取 Base64 显示
 async function loadImageFromGAS() {
-    // 添加用户参数到请求
-    const res = await fetch(`${GAS_URL}?action=getBase64&user=${encodeURIComponent(CURRENT_USER)}`);
+    // 添加用户参数到URL
+    const res = await fetch(GAS_URL + "?action=getBase64&user=" + encodeURIComponent(CURRENT_USER));
     const text = await res.text();
 
     if (text.trim() !== "") {
@@ -190,8 +171,8 @@ editIcon.onclick = async () => {
     // 上传按钮显示
     uploadBtn.style.display = "block";
 
-    // 删除时也要传递用户信息
-    await fetch(`${GAS_URL}?action=deleteBase64&user=${encodeURIComponent(CURRENT_USER)}`);
+    // 删除时添加用户参数
+    await fetch(GAS_URL + "?action=deleteBase64&user=" + encodeURIComponent(CURRENT_USER));
 };
 </script>
 
